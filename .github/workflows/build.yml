@@ -18,6 +18,8 @@ jobs:
     name: Build with Java 21
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      VERSION: 0.0.0-SNAPSHOT
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
