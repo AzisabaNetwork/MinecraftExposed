@@ -1,21 +1,16 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+
 plugins {
-    `java-library`
-    alias(libs.plugins.kotlin.jvm)
+    base
+    alias(libs.plugins.kotlin.jvm) apply false
 }
 
 group = "net.azisaba.exposed"
-version = System.getenv("VERSION")
-
-repositories {
-    mavenCentral()
-}
-
-kotlin { jvmToolchain(21) }
-java { toolchain.languageVersion.set(JavaLanguageVersion.of(21)) }
+version = System.getenv("VERSION") ?: throw GradleException("Environment variable VERSION is required")
 
 val exposed = libs.exposed
 
-subprojects {
+configure(subprojects.filter { it.childProjects.isEmpty() }) {
     group = rootProject.group
     version = rootProject.version
 
@@ -28,8 +23,16 @@ subprojects {
     }
 
     dependencies {
-        compileOnly(exposed.core)
-        testImplementation(kotlin("test"))
+        add("compileOnly", exposed.core)
+        add("testImplementation", kotlin("test"))
+    }
+
+    configure<KotlinJvmProjectExtension> {
+        jvmToolchain(21)
+    }
+
+    configure<JavaPluginExtension> {
+        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
     }
 
     configure<PublishingExtension> {
